@@ -1,8 +1,8 @@
-package collisionhaxe;
+package collisionhaxe.example;
 
 import js.Lib;
-import collisionhaxe.Game;
-import collisionhaxe.Particle;
+import collisionhaxe.example.Game;
+import collisionhaxe.example.Particle;
 
 class Main 
 {

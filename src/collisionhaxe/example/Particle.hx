@@ -1,4 +1,6 @@
-package collisionhaxe;
+package collisionhaxe.example;
+import collisionhaxe.Actor;
+import collisionhaxe.BoundingBox;
 import js.html.CanvasRenderingContext2D;
 
 // Just an example of an actor - not essential
@@ -11,8 +13,9 @@ class Particle extends Actor
     private var color : String;
     private var oldX : Float;
     private var oldY : Float;
+    private var game : Game;
 
-    public function new(boundingBox : BoundingBox, velocityX : Float, velocityY : Float) {
+    public function new(boundingBox : BoundingBox, velocityX : Float, velocityY : Float, game : Game) {
         super(boundingBox, velocityX, velocityY, false);
         var k = Math.random();
         this.size = 1.5 - k * k * 0.8;
@@ -23,6 +26,7 @@ class Particle extends Actor
         this.color = 'rgb(' + c + ', 0, 0)';
         this.oldX = null;
         this.oldY = null;
+        this.game = game;
     }
 
     override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) { 
@@ -42,7 +46,7 @@ class Particle extends Actor
         if(bounceY > box.y - box.halfHeight && bounceY < box.y + box.halfHeight) this.velocityY *= 0.9;
     }
 
-    override function onTick(game : Game, deltaTime : Float) {
+    override function onTick(deltaTime : Float) {
         this.age += deltaTime;
         if(this.age > this.maxAge) game.remove(this);
     }

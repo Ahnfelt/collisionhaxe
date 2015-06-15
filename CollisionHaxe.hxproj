@@ -22,7 +22,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="collisionhaxe.Main" />
+    <option mainClass="collisionhaxe.example.Main" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -33,6 +33,7 @@
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
     <compile path="src\collisionhaxe\Main.hx" />
+    <compile path="src\collisionhaxe\example\Main.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

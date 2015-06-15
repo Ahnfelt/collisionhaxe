@@ -35,9 +35,8 @@
                     var vX = Math.cos(angle) * velocity;
                     var vY = Math.sin(angle) * velocity - 100;
                     var d = Math.random() * 0.1;
-                    var actor = new collisionhaxe.Particle(new collisionhaxe.BoundingBox(x + vX * d, y + vY * d, 5, 5), velocityX + vX, velocityY + vY);
+                    var actor = new collisionhaxe.example.Particle(new collisionhaxe.BoundingBox(x + vX * d, y + vY * d, 5, 5), velocityX + vX, velocityY + vY, game);
                     game.insert(actor);
-                    console.log(angle);
                 }
                 
                 var randomActors = [];
@@ -60,7 +59,7 @@
                 var actors = randomActors.concat([
                     player
                 ]);
-                var game = new collisionhaxe.Game(actors);
+                var game = new collisionhaxe.example.Game(actors);
                 game.loop(context, function(game, deltaTime) {
                     if(keys.left) player.velocityX = -200;
                     else if(keys.right) player.velocityX = 200;

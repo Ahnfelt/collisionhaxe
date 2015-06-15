@@ -11,7 +11,6 @@ class Actor {
     public var velocityY : Float;
     public var solid : Bool;
     public var id : Int;
-    public var game : Game;
 
     public function new(boundingBox, velocityX = 0.0, velocityY = 0.0, solid = false) {
         this.boundingBox = boundingBox;
@@ -140,7 +139,7 @@ class Actor {
         return result;
     }
 
-    public function onTick(game : Game, deltaTime : Float) {}
+    public function onTick(deltaTime : Float) {}
     public function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) : Bool { return true;  }
     public function onCollisionBy(that : Actor, incomingVelocityX : Float, incomingVelocityY : Float) : Void { }
 

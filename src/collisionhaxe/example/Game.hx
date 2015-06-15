@@ -1,5 +1,7 @@
-package collisionhaxe;
+package collisionhaxe.example;
 import js.html.CanvasRenderingContext2D;
+import collisionhaxe.Actor;
+import collisionhaxe.SparseGrid;
 
 class Game
 {
@@ -20,7 +22,6 @@ class Game
     }
 
     public function insert(actor : Actor) {
-        actor.game = this;
         var i = this.actors.indexOf(actor);
         if(i == -1) {
             this.actors.push(actor);
@@ -46,7 +47,7 @@ class Game
             var actor = this.actors[i];
             if(actor != null) { // Because we may remove actors during the update
                 actor.move(this.grid, deltaTime);
-                actor.onTick(this, deltaTime);
+                actor.onTick(deltaTime);
             }
         }
     }
