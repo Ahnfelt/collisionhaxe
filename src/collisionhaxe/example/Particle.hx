@@ -4,8 +4,7 @@ import collisionhaxe.BoundingBox;
 import js.html.CanvasRenderingContext2D;
 
 // Just an example of an actor - not essential
-class Particle extends Actor
-{
+class Particle extends Actor {
     
     private var size : Float;
     private var age : Float;

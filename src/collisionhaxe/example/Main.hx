@@ -4,11 +4,9 @@ import js.Lib;
 import collisionhaxe.example.Game;
 import collisionhaxe.example.Particle;
 
-class Main 
-{
+class Main {
 	
-	static function main() 
-	{
+	static function main() {
         // To use the package for JavaScript (temporarily)
 		untyped { window.collisionhaxe = collisionhaxe; }
 	}

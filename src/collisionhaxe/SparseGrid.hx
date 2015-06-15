@@ -3,8 +3,8 @@ package collisionhaxe;
 import haxe.ds.StringMap;
 import haxe.ds.IntMap;
 
-class SparseGrid<T>
-{
+class SparseGrid<T> {
+    
     private var cells : StringMap<Array<T>>;
     private var columnWidth : Float;
     private var rowHeight : Float;

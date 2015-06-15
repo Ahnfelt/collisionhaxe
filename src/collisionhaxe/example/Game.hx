@@ -3,8 +3,7 @@ import js.html.CanvasRenderingContext2D;
 import collisionhaxe.Actor;
 import collisionhaxe.SparseGrid;
 
-class Game
-{
+class Game {
     
     public var actors : Array<Actor>;
     public var grid : SparseGrid<Actor>;
