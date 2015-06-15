@@ -12,7 +12,7 @@ class Actor {
     public var solid : Bool;
     public var id : Int;
 
-    public function new(boundingBox, velocityX = 0.0, velocityY = 0.0, solid = false) {
+    public function new(boundingBox : BoundingBox, velocityX = 0.0, velocityY = 0.0, solid = false) {
         this.boundingBox = boundingBox;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -20,7 +20,7 @@ class Actor {
         this.id = nextId++;
     }
 
-    public function setBoundingBox(boundingBox) {
+    public function setBoundingBox(boundingBox : BoundingBox) {
         this.boundingBox = boundingBox;
     }
 
