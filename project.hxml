@@ -1,0 +1,4 @@
+-lib pixijs
+-cp src
+-js bin/BunnyGame.js
+-main collisionhaxe.example.BunnyGame
