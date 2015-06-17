@@ -37,6 +37,8 @@ class BunnyLogic {
         stage.addChild(bunny2.partContainer1);
         stage.addChild(bunny1.partContainer2);
         stage.addChild(bunny2.partContainer2);
+        stage.addChild(bunny1.partContainer3);
+        stage.addChild(bunny2.partContainer3);
         stage.addChild(wall1.sprite);
 
         grid.insert(bunny1.boundingBox, bunny1);
@@ -79,6 +81,7 @@ private class Bunny extends Actor {
 
     public var partContainer1 = new ParticleContainer(1000, untyped {scale: true, position: true, rotation: true, uvs: true, alpha: true});
     public var partContainer2 = new ParticleContainer(1000, untyped {scale: true, position: true, rotation: true, uvs: true, alpha: true});
+    public var partContainer3 = new ParticleContainer(1000, untyped {scale: true, position: true, rotation: true, uvs: true, alpha: true});
     public var parts : Array<BunnyPart> = [];
 
     public function new(x : Float, y : Float, sprite : Sprite) {
@@ -110,6 +113,7 @@ private class Bunny extends Actor {
 				parts.remove(part);
 				partContainer1.removeChild(part.sprite);
                 partContainer2.removeChild(part.sprite);
+                partContainer3.removeChild(part.sprite);
 			} else {
 				part.update(grid, deltaTime);
 			}
@@ -145,8 +149,12 @@ private class Bunny extends Actor {
                 var sprite = new Sprite(texture);
                 var timeToLive = Math.random() * 5 + 5;
                 var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, timeToLive, scale, sprite);
-                parts.push(part);
+				parts.push(part);
                 container.addChild(part.sprite);
+                var bloodSprite = Sprite.fromImage("../assets/blood1.png");
+				var blood = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX * 0.99, partVelocityY * 0.99, timeToLive / 2, scale, bloodSprite);
+				parts.push(blood);
+                partContainer3.addChild(blood.sprite);
             }
 
             boundingBox.x = startX;
