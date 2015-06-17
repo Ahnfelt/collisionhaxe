@@ -75,6 +75,9 @@ private class Bunny extends Actor {
     var startX : Float;
     var startY : Float;
 
+    var maxJumps = 2;
+    var jumpsLeft : Int;
+
     public var sprite : Sprite;
 
     public var partContainer1 = new ParticleContainer(1000, untyped {scale: true, position: true, rotation: true, uvs: true, alpha: true});
@@ -87,6 +90,7 @@ private class Bunny extends Actor {
         sprite.anchor.set(0.5, 0.64);
         this.startX = x;
         this.startY = y;
+        jumpsLeft = maxJumps;
     }
 
     public var keys = {
@@ -117,10 +121,15 @@ private class Bunny extends Actor {
     }
 
     public function onJump() {
-        velocityY = -300;
+        if(jumpsLeft > 0) {
+            velocityY = -600;
+            jumpsLeft--;
+        }
     }
 
     override function onCollisionBy(that : Actor, incomingVelocityX : Float, incomingVelocityY : Float) {
+        if(Std.is(that, Wall)) jumpsLeft = maxJumps;
+
         if(Std.is(that, Bunny) && that.boundingBox.y < boundingBox.y && velocityY + incomingVelocityY > 0) {
             that.velocityY = -200;
 
