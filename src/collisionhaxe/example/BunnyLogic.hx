@@ -128,16 +128,18 @@ private class Bunny extends Actor {
 
 private class BunnyPart extends Actor {
     public var sprite : Sprite;
+	public var alive = true;
 
     public function new(x : Float, y : Float, speedX : Float, speedY : Float, sprite : Sprite) {
-        super(new BoundingBox(x, y, 10, 10), speedX, speedY, false);
+        super(new BoundingBox(x, y, 2, 2), speedX, speedY, false);
         this.sprite = sprite;
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
     }
 
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
-        velocityY += BunnyLogic.gravitationalForce * deltaTime;
+        if(!alive) return;
+		velocityY += BunnyLogic.gravitationalForce * deltaTime;
         move(grid, deltaTime);
 
         sprite.position.set(boundingBox.x, boundingBox.y);
@@ -148,7 +150,8 @@ private class BunnyPart extends Actor {
 	}
 
     override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) {
-        velocityX *= 0.5;
+        if(bounceVelocityY > 0 && velocityY == 0) alive = false;
+		velocityX *= 0.5;
         return false;
     }
 
