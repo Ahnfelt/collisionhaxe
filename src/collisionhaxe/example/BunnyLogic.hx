@@ -25,8 +25,8 @@ class BunnyLogic {
     var grid = new SparseGrid<Actor>(200, 200);
 
     public function init(stage : Container) {
-        bunny1 = new Bunny(100, 100, new Sprite(Texture.fromImage("../assets/bunny1.png")));
-        bunny2 = new Bunny(800, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
+        bunny1 = new Bunny(800, 100, new Sprite(Texture.fromImage("../assets/bunny1.png")));
+        bunny2 = new Bunny(100, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
 
         var wallSprite = new TilingSprite(Texture.fromImage("../assets/wall.jpg"), 1000, 40);
         var wall1 = new Wall(400, 800, 1000, 40, wallSprite);
@@ -74,7 +74,13 @@ private class Bunny extends Actor {
     var startY : Float;
 
     public var sprite : Sprite;
-    public var partContainer = new ParticleContainer();
+    public var partContainer = new ParticleContainer(1000, untyped {
+        scale: true,
+        position: true,
+        rotation: true,
+        uvs: true,
+        alpha: true
+    });
     public var parts : Array<BunnyPart> = [];
 
     public function new(x : Float, y : Float, sprite : Sprite) {
@@ -115,7 +121,12 @@ private class Bunny extends Actor {
             that.velocityY = -200;
 
             for(i in 0 ... 100) {
-                var part = new BunnyPart(boundingBox.x, boundingBox.y, velocityX + (Math.random() - 0.5) * 1000, velocityY + (Math.random() - 0.7) * 1000, new Sprite(Texture.fromImage("../assets/bunny-part1.png")));
+                var angle = Math.random() * 2 * Math.PI;
+                var magnitute = Math.random() * Math.log(Math.abs(velocityY - incomingVelocityY) / 100);
+                var partVelocityX = velocityX + Math.cos(angle) * magnitute * 1000;
+                var partVelocityY = velocityY + (Math.sin(angle) - 0.3) * magnitute * 1000;
+                var sprite = new Sprite(Texture.fromImage("../assets/bunny-part1.png"));
+                var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, sprite);
                 parts.push(part);
                 partContainer.addChild(part.sprite);
             }
@@ -129,12 +140,15 @@ private class Bunny extends Actor {
 private class BunnyPart extends Actor {
     public var sprite : Sprite;
 	public var alive = true;
+    var spin : Float;
 
     public function new(x : Float, y : Float, speedX : Float, speedY : Float, sprite : Sprite) {
         super(new BoundingBox(x, y, 2, 2), speedX, speedY, false);
         this.sprite = sprite;
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
+        sprite.scale.set(Math.random() * 2 + 0.1, Math.random() * 2 + 0.1);
+        spin = (Math.random() - 0.5) * 100;
     }
 
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
@@ -143,6 +157,7 @@ private class BunnyPart extends Actor {
         move(grid, deltaTime);
 
         sprite.position.set(boundingBox.x, boundingBox.y);
+        sprite.rotation += spin * deltaTime;
     }
 	
 	override public function canCollideWith(that : Actor) : Bool {
@@ -152,6 +167,8 @@ private class BunnyPart extends Actor {
     override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) {
         if(bounceVelocityY > 0 && velocityY == 0) alive = false;
 		velocityX *= 0.5;
+        velocityX *= 0.5;
+        spin = 0;
         return false;
     }
 
