@@ -74,7 +74,13 @@ private class Bunny extends Actor {
     var startY : Float;
 
     public var sprite : Sprite;
-    public var partContainer = new ParticleContainer();
+    public var partContainer = new ParticleContainer(1000, untyped {
+        scale: true,
+        position: true,
+        rotation: true,
+        uvs: true,
+        alpha: true
+    });
     public var parts : Array<BunnyPart> = [];
 
     public function new(x : Float, y : Float, sprite : Sprite) {
@@ -115,7 +121,12 @@ private class Bunny extends Actor {
             that.velocityY = -200;
 
             for(i in 0 ... 100) {
-                var part = new BunnyPart(boundingBox.x, boundingBox.y, velocityX + (Math.random() - 0.5) * 1000, velocityY + (Math.random() - 0.7) * 1000, new Sprite(Texture.fromImage("../assets/bunny-part1.png")));
+                var angle = Math.random() * 2 * Math.PI;
+                var magnitute = Math.random() * Math.log(Math.abs(velocityY - incomingVelocityY) / 100);
+                var partVelocityX = velocityX + Math.cos(angle) * magnitute * 1000;
+                var partVelocityY = velocityY + (Math.sin(angle) - 0.3) * magnitute * 1000;
+                var sprite = new Sprite(Texture.fromImage("../assets/bunny-part1.png"));
+                var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, sprite);
                 parts.push(part);
                 partContainer.addChild(part.sprite);
             }
@@ -135,7 +146,8 @@ private class BunnyPart extends Actor {
         this.sprite = sprite;
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
-        spin = Math.random() * 1000;
+        sprite.scale.set(Math.random() * 2 + 0.1, Math.random() * 2 + 0.1);
+        spin = (Math.random() - 0.5) * 100;
     }
 
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
@@ -152,6 +164,7 @@ private class BunnyPart extends Actor {
 
     override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) {
         velocityX *= 0.5;
+        spin = 0;
         return false;
     }
 
