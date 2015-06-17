@@ -17,9 +17,12 @@ class BunnyGame extends Application {
    	function _init() {
    		backgroundColor = 0x003366;
    		antialias = true;
-   		onUpdate = function(dt) {logic.update(dt, _stage);};
-   		super.start(Application.CANVAS);
+   		onUpdate = function(dt) {logic.update(dt / 1000, _stage);};
+   		super.start();
         logic.init(_stage);
+
+        Browser.document.onkeydown = function(event) { logic.onKey(true, event); }
+        Browser.document.onkeyup = function(event) { logic.onKey(false, event); }
    	}
 
 
