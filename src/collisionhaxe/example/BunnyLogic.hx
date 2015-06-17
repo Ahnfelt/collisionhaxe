@@ -143,9 +143,9 @@ private class Bunny extends Actor {
                 };
 
                 var angle = Math.random() * 2 * Math.PI;
-                var magnitute = Math.random() * Math.log(Math.abs(velocityY - incomingVelocityY) / 100);
-                var partVelocityX = velocityX + Math.cos(angle) * magnitute * 1000;
-                var partVelocityY = velocityY + (Math.sin(angle) - 0.3) * magnitute * 1000;
+                var magnitute = Math.random() * Math.log(1 + Math.abs(velocityY - incomingVelocityY) / 100) * 400;
+                var partVelocityX = velocityX + Math.cos(angle) * magnitute;
+                var partVelocityY = velocityY + (Math.sin(angle) - 0.3) * magnitute;
                 var sprite = new Sprite(texture);
                 var timeToLive = Math.random() * 5 + 5;
                 var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, timeToLive, scale, sprite);
