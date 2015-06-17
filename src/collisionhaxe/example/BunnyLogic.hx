@@ -29,7 +29,7 @@ class BunnyLogic {
         bunny2 = new Bunny(100, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
 
         var wallSprite = new TilingSprite(Texture.fromImage("../assets/wall.jpg"), 1000, 40);
-        var wall1 = new Wall(400, 800, 1000, 40, wallSprite);
+        var wall1 = new Wall(550, 700, 1000, 40, wallSprite);
 
         stage.addChild(bunny1.sprite);
         stage.addChild(bunny2.sprite);
@@ -106,7 +106,13 @@ private class Bunny extends Actor {
         sprite.position.set(boundingBox.x, boundingBox.y);
 
         for(part in parts) {
-            part.update(grid, deltaTime);
+            if(part.timeToLive < 0) {
+				parts.remove(part);
+				partContainer1.removeChild(part.sprite);
+                partContainer2.removeChild(part.sprite);
+			} else {
+				part.update(grid, deltaTime);
+			}
         }
     }
 
@@ -121,12 +127,15 @@ private class Bunny extends Actor {
             for(i in 0 ... 100) {
                 var container : ParticleContainer;
                 var texture : Texture;
-                if(i % 2 == 0) {
+                var scale : Float;
+                if(i % 3 != 0) {
                     container = partContainer1;
                     texture = Texture.fromImage("../assets/bunny-part1.png");
+                    scale = 0.8;
                 } else {
                     container = partContainer2;
                     texture = Texture.fromImage("../assets/bunny-part2.png");
+                    scale = 1;
                 };
 
                 var angle = Math.random() * 2 * Math.PI;
@@ -134,7 +143,8 @@ private class Bunny extends Actor {
                 var partVelocityX = velocityX + Math.cos(angle) * magnitute * 1000;
                 var partVelocityY = velocityY + (Math.sin(angle) - 0.3) * magnitute * 1000;
                 var sprite = new Sprite(texture);
-                var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, sprite);
+                var timeToLive = Math.random() * 5 + 5;
+                var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, timeToLive, scale, sprite);
                 parts.push(part);
                 container.addChild(part.sprite);
             }
@@ -147,20 +157,28 @@ private class Bunny extends Actor {
 
 private class BunnyPart extends Actor {
     public var sprite : Sprite;
+	public var timeToLive : Float;
 	public var alive = true;
     var spin : Float;
 
-    public function new(x : Float, y : Float, speedX : Float, speedY : Float, sprite : Sprite) {
+    public function new(x : Float, y : Float, speedX : Float, speedY : Float, timeToLive : Float, scale : Float, sprite : Sprite) {
         super(new BoundingBox(x, y, 2, 2), speedX, speedY, false);
+		this.timeToLive = timeToLive;
         this.sprite = sprite;
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
-        sprite.scale.set(Math.random() * 2 + 0.1, Math.random() * 2 + 0.1);
+        sprite.scale.set((Math.random() * 1.5 + 0.5) * scale, (Math.random() * 1.5 + 0.5) * scale);
         spin = (Math.random() - 0.5) * 100;
     }
 
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
-        if(!alive) return;
+        timeToLive -= deltaTime;
+		if (timeToLive < 1) {
+			sprite.scale.x *= 0.9;
+			sprite.scale.y *= 0.9;
+		}
+		
+		if(!alive) return;
 		velocityY += BunnyLogic.gravitationalForce * deltaTime;
         move(grid, deltaTime);
 
