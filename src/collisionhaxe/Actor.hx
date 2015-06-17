@@ -98,7 +98,7 @@ class Actor {
         var result = this.boundingBox.x + delta;
         for(i in 0 ... actors.length) {
             var that = actors[i];
-            if(this != that && box.intersects(that.boundingBox)) {
+            if(this != that && box.intersects(that.boundingBox) && this.canCollideWith(that)) {
                 var thatBox = that.boundingBox;
                 if(delta > 0 && thatBox.x - thatBox.halfWidth < result + half) {
                     result = thatBox.x - thatBox.halfWidth - half - epsilon;
@@ -122,7 +122,7 @@ class Actor {
         var result = this.boundingBox.y + delta;
         for(i in 0 ... actors.length) {
             var that = actors[i];
-            if(this != that && box.intersects(that.boundingBox)) {
+            if(this != that && box.intersects(that.boundingBox) && this.canCollideWith(that)) {
                 var thatBox = that.boundingBox;
                 if(delta > 0 && thatBox.y - thatBox.halfHeight < result + half) {
                     result = thatBox.y - thatBox.halfHeight - half - epsilon;
@@ -140,6 +140,7 @@ class Actor {
     }
 
     public function onTick(deltaTime : Float) {}
+    public function canCollideWith(that : Actor) : Bool { return true;  }
     public function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) : Bool { return true;  }
     public function onCollisionBy(that : Actor, incomingVelocityX : Float, incomingVelocityY : Float) : Void { }
 

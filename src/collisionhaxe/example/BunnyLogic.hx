@@ -1,5 +1,6 @@
 package collisionhaxe.example;
 
+import collisionhaxe.Actor;
 import pixi.extras.TilingSprite;
 import js.Browser;
 import js.Lib;
@@ -141,6 +142,10 @@ private class BunnyPart extends Actor {
 
         sprite.position.set(boundingBox.x, boundingBox.y);
     }
+	
+	override public function canCollideWith(that : Actor) : Bool {
+		return Std.is(that, Wall);
+	}
 
     override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) {
         velocityX *= 0.5;
