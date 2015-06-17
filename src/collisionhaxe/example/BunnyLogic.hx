@@ -1,5 +1,8 @@
 package collisionhaxe.example;
 
+import pixi.core.textures.Texture;
+import pixi.core.sprites.Sprite;
+import pixi.core.math.Matrix;
 import pixi.core.graphics.Graphics;
 import pixi.core.display.Container;
 
@@ -7,25 +10,17 @@ class BunnyLogic {
 
     public function new() {}
 
-    var bunny : Graphics;
+    var bunnySprite1 : Sprite;
+    var bunny1 = new Actor();
 
     public function init(stage : Container) {
-        bunny = new Graphics();
-        stage.addChild(bunny);
+        bunnySprite1 = new Sprite(Texture.fromImage("assets/bunny.png"));
+        bunnySprite1.anchor.set(0.5, 0.5);
+        stage.addChild(bunnySprite1);
     }
 
     public function update(elapsedTime : Float, stage : Container) {
-        bunny.clear();
-        bunny.lineStyle(30, 0xFF0000, 1);
-        bunny.beginFill(0xFF0000, 0.5);
-
-        bunny.moveTo(-120 + Math.sin(elapsedTime) * 20, -100 + Math.cos(elapsedTime) * 20);
-        bunny.lineTo(120 + Math.cos(elapsedTime) * 20, -100 + Math.sin(elapsedTime) * 20);
-        bunny.lineTo(120 + Math.sin(elapsedTime) * 20, 100 + Math.cos(elapsedTime) * 20);
-        bunny.lineTo(-120 + Math.cos(elapsedTime) * 20, 100 + Math.sin(elapsedTime) * 20);
-        bunny.lineTo(-120 + Math.sin(elapsedTime) * 20, -100 + Math.cos(elapsedTime) * 20);
-
-        bunny.rotation = elapsedTime * 0.1;
+        bunnySprite1.position.set(bunny1.boundingBox.x, bunny1.boundingBox.y);
    	}
 
 }
