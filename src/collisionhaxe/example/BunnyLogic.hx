@@ -12,6 +12,9 @@ import pixi.core.display.Container;
 
 class BunnyLogic {
 
+    static public var gravitationalForce = 1000;
+
+
     public function new() {}
 
     var bunnySprite1 : Sprite;
@@ -29,6 +32,8 @@ class BunnyLogic {
 
         stage.addChild(bunny1.sprite);
         stage.addChild(bunny2.sprite);
+        stage.addChild(bunny1.partContainer);
+        stage.addChild(bunny2.partContainer);
         stage.addChild(wall1.sprite);
 
         grid.insert(bunny1.boundingBox, bunny1);
@@ -42,7 +47,6 @@ class BunnyLogic {
    	}
 
    	public function onKey(pressed : Bool, event : Dynamic) {
-   	    Browser.console.dir(event);
         if(event.keyCode == 37) bunny1.keys.left = pressed;
         else if(event.keyCode == 39) bunny1.keys.right = pressed;
         else if(event.keyCode == 38) {
@@ -64,12 +68,13 @@ class BunnyLogic {
 }
 
 private class Bunny extends Actor {
-    var gravitationalForce = 1000;
+
     var startX : Float;
     var startY : Float;
 
-
     public var sprite : Sprite;
+    public var partContainer = new ParticleContainer();
+    public var parts : Array<BunnyPart> = [];
 
     public function new(x : Float, y : Float, sprite : Sprite) {
         super(new BoundingBox(x, y, 30, 30), 0, -30, true);
@@ -90,10 +95,14 @@ private class Bunny extends Actor {
         else if(keys.right) velocityX = 200;
         else velocityX *= 0.90;
         if(Math.abs(velocityX) < 5) velocityX = 0;
-        velocityY += gravitationalForce * deltaTime;
+        velocityY += BunnyLogic.gravitationalForce * deltaTime;
         move(grid, deltaTime);
 
         sprite.position.set(boundingBox.x, boundingBox.y);
+
+        for(part in parts) {
+            part.update(grid, deltaTime);
+        }
     }
 
     public function onJump() {
@@ -101,12 +110,43 @@ private class Bunny extends Actor {
     }
 
     override function onCollisionBy(that : Actor, incomingVelocityX : Float, incomingVelocityY : Float) {
-        if(that.boundingBox.y < boundingBox.y && velocityY + incomingVelocityY > 0) {
+        if(Std.is(that, Bunny) && that.boundingBox.y < boundingBox.y && velocityY + incomingVelocityY > 0) {
             that.velocityY = -200;
+
+            for(i in 0 ... 100) {
+                var part = new BunnyPart(boundingBox.x, boundingBox.y, velocityX + (Math.random() - 0.5) * 1000, velocityY + (Math.random() - 0.7) * 1000, new Sprite(Texture.fromImage("../assets/bunny-part1.png")));
+                parts.push(part);
+                partContainer.addChild(part.sprite);
+            }
+
             boundingBox.x = startX;
             boundingBox.y = startY;
         }
     }
+}
+
+private class BunnyPart extends Actor {
+    public var sprite : Sprite;
+
+    public function new(x : Float, y : Float, speedX : Float, speedY : Float, sprite : Sprite) {
+        super(new BoundingBox(x, y, 10, 10), speedX, speedY, false);
+        this.sprite = sprite;
+        sprite.anchor.set(0.5, 0.5);
+        sprite.position.set(boundingBox.x, boundingBox.y);
+    }
+
+    public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
+        velocityY += BunnyLogic.gravitationalForce * deltaTime;
+        move(grid, deltaTime);
+
+        sprite.position.set(boundingBox.x, boundingBox.y);
+    }
+
+    override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) {
+        velocityX *= 0.5;
+        return false;
+    }
+
 }
 
 private class Wall extends Actor {
