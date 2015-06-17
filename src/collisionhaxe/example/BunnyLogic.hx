@@ -2,8 +2,6 @@ package collisionhaxe.example;
 
 import pixi.core.textures.Texture;
 import pixi.core.sprites.Sprite;
-import pixi.core.math.Matrix;
-import pixi.core.graphics.Graphics;
 import pixi.core.display.Container;
 
 class BunnyLogic {
@@ -11,7 +9,7 @@ class BunnyLogic {
     public function new() {}
 
     var bunnySprite1 : Sprite;
-    var bunny1 = new Actor();
+    var bunny1 = new Actor(new BoundingBox(100, 100, 10, 10));
 
     public function init(stage : Container) {
         bunnySprite1 = new Sprite(Texture.fromImage("assets/bunny.png"));
