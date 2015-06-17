@@ -33,8 +33,10 @@ class BunnyLogic {
 
         stage.addChild(bunny1.sprite);
         stage.addChild(bunny2.sprite);
-        stage.addChild(bunny1.partContainer);
-        stage.addChild(bunny2.partContainer);
+        stage.addChild(bunny1.partContainer1);
+        stage.addChild(bunny2.partContainer1);
+        stage.addChild(bunny1.partContainer2);
+        stage.addChild(bunny2.partContainer2);
         stage.addChild(wall1.sprite);
 
         grid.insert(bunny1.boundingBox, bunny1);
@@ -74,13 +76,9 @@ private class Bunny extends Actor {
     var startY : Float;
 
     public var sprite : Sprite;
-    public var partContainer = new ParticleContainer(1000, untyped {
-        scale: true,
-        position: true,
-        rotation: true,
-        uvs: true,
-        alpha: true
-    });
+
+    public var partContainer1 = new ParticleContainer(1000, untyped {scale: true, position: true, rotation: true, uvs: true, alpha: true});
+    public var partContainer2 = new ParticleContainer(1000, untyped {scale: true, position: true, rotation: true, uvs: true, alpha: true});
     public var parts : Array<BunnyPart> = [];
 
     public function new(x : Float, y : Float, sprite : Sprite) {
@@ -121,14 +119,24 @@ private class Bunny extends Actor {
             that.velocityY = -200;
 
             for(i in 0 ... 100) {
+                var container : ParticleContainer;
+                var texture : Texture;
+                if(i % 2 == 0) {
+                    container = partContainer1;
+                    texture = Texture.fromImage("../assets/bunny-part1.png");
+                } else {
+                    container = partContainer2;
+                    texture = Texture.fromImage("../assets/bunny-part2.png");
+                };
+
                 var angle = Math.random() * 2 * Math.PI;
                 var magnitute = Math.random() * Math.log(Math.abs(velocityY - incomingVelocityY) / 100);
                 var partVelocityX = velocityX + Math.cos(angle) * magnitute * 1000;
                 var partVelocityY = velocityY + (Math.sin(angle) - 0.3) * magnitute * 1000;
-                var sprite = new Sprite(Texture.fromImage("../assets/bunny-part1.png"));
+                var sprite = new Sprite(texture);
                 var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, sprite);
                 parts.push(part);
-                partContainer.addChild(part.sprite);
+                container.addChild(part.sprite);
             }
 
             boundingBox.x = startX;
