@@ -24,8 +24,8 @@ class BunnyLogic {
     var grid = new SparseGrid<Actor>(200, 200);
 
     public function init(stage : Container) {
-        bunny1 = new Bunny(100, 100, new Sprite(Texture.fromImage("../assets/bunny1.png")));
-        bunny2 = new Bunny(800, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
+        bunny1 = new Bunny(800, 100, new Sprite(Texture.fromImage("../assets/bunny1.png")));
+        bunny2 = new Bunny(100, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
 
         var wallSprite = new TilingSprite(Texture.fromImage("../assets/wall.jpg"), 1000, 40);
         var wall1 = new Wall(400, 800, 1000, 40, wallSprite);
@@ -127,12 +127,14 @@ private class Bunny extends Actor {
 
 private class BunnyPart extends Actor {
     public var sprite : Sprite;
+    var spin : Float;
 
     public function new(x : Float, y : Float, speedX : Float, speedY : Float, sprite : Sprite) {
         super(new BoundingBox(x, y, 10, 10), speedX, speedY, false);
         this.sprite = sprite;
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
+        spin = Math.random() * 1000;
     }
 
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
@@ -140,6 +142,7 @@ private class BunnyPart extends Actor {
         move(grid, deltaTime);
 
         sprite.position.set(boundingBox.x, boundingBox.y);
+        sprite.rotation += spin * deltaTime;
     }
 
     override function onCollision(that : Actor, bounceVelocityX : Float, bounceVelocityY : Float, bounceX : Float, bounceY : Float) {
