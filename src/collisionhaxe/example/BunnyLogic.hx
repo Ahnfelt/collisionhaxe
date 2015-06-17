@@ -26,10 +26,13 @@ class BunnyLogic {
 
     public function init(stage : Container) {
         bunny1 = new Bunny(800, 100, new Sprite(Texture.fromImage("../assets/bunny1.png")));
-        bunny2 = new Bunny(100, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
+        bunny2 = new Bunny(200, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
 
-        var wallSprite = new TilingSprite(Texture.fromImage("../assets/wall.jpg"), 1000, 40);
-        var wall1 = new Wall(550, 700, 1000, 40, wallSprite);
+        var walls = [
+			new Wall(600, 700, 1000, 40),
+			new Wall(900, 500, 200, 40),
+			new Wall(80, 600, 40, 240)
+		];
 
         stage.addChild(bunny1.sprite);
         stage.addChild(bunny2.sprite);
@@ -39,11 +42,11 @@ class BunnyLogic {
         stage.addChild(bunny2.partContainer2);
         stage.addChild(bunny1.partContainer3);
         stage.addChild(bunny2.partContainer3);
-        stage.addChild(wall1.sprite);
+        for(wall in walls) stage.addChild(wall.sprite);
 
         grid.insert(bunny1.boundingBox, bunny1);
         grid.insert(bunny2.boundingBox, bunny2);
-        grid.insert(wall1.boundingBox, wall1);
+        for(wall in walls) grid.insert(wall.boundingBox, wall);
     }
 
     public function update(deltaTime : Float, stage : Container) {
@@ -99,8 +102,8 @@ private class Bunny extends Actor {
     };
 
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
-        if(keys.left) velocityX = -200;
-        else if(keys.right) velocityX = 200;
+        if(keys.left) { sprite.scale.x = -1;  velocityX = -200; }
+        else if(keys.right) { sprite.scale.x = 1;  velocityX = 200; }
         else velocityX *= 0.90;
         if(Math.abs(velocityX) < 5) velocityX = 0;
         velocityY += BunnyLogic.gravitationalForce * deltaTime;
@@ -151,10 +154,10 @@ private class Bunny extends Actor {
                 var part = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX, partVelocityY, timeToLive, scale, sprite);
 				parts.push(part);
                 container.addChild(part.sprite);
-                var bloodSprite = Sprite.fromImage("../assets/blood1.png");
-				var blood = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX * 0.99, partVelocityY * 0.99, timeToLive / 2, scale, bloodSprite);
+                /*var bloodSprite = Sprite.fromImage("../assets/blood1.png");
+				var blood = new BunnyPart(boundingBox.x, boundingBox.y, partVelocityX * 0.95, partVelocityY * 0.95, timeToLive / 2, scale, bloodSprite);
 				parts.push(blood);
-                partContainer3.addChild(blood.sprite);
+                partContainer3.addChild(blood.sprite);*/
             }
 
             boundingBox.x = startX;
@@ -182,8 +185,8 @@ private class BunnyPart extends Actor {
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
         timeToLive -= deltaTime;
 		if (timeToLive < 1) {
-			sprite.scale.x *= 0.9;
-			sprite.scale.y *= 0.9;
+			sprite.scale.x *= 0.90;
+			sprite.scale.y *= 0.90;
 		}
 		
 		if(!alive) return;
@@ -211,9 +214,9 @@ private class BunnyPart extends Actor {
 private class Wall extends Actor {
     public var sprite : Sprite;
 
-    public function new(x : Float, y : Float, width : Float, height : Float, sprite : Sprite) {
+    public function new(x : Float, y : Float, width : Float, height : Float) {
         super(new BoundingBox(x, y, width, height), 0, 0, true);
-        this.sprite = sprite;
+        this.sprite = new TilingSprite(Texture.fromImage("../assets/wall.jpg"), width, height);
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
     }
