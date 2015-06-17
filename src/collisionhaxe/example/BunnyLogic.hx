@@ -23,10 +23,20 @@ class BunnyLogic {
     var bunny2 : Bunny;
 
     var grid = new SparseGrid<Actor>(200, 200);
+	
+	static public var textures = null;
 
     public function init(stage : Container) {
-        bunny1 = new Bunny(800, 100, new Sprite(Texture.fromImage("../assets/bunny1.png")));
-        bunny2 = new Bunny(200, 100, new Sprite(Texture.fromImage("../assets/bunny2.png")));
+		textures = {
+			bunny1: Texture.fromImage("../assets/bunny1.png"),
+			bunny2: Texture.fromImage("../assets/bunny2.png"),
+			bunnyPart1: Texture.fromImage("../assets/bunny-part1.png"),
+			bunnyPart2: Texture.fromImage("../assets/bunny-part2.png"),
+			wall: Texture.fromImage("../assets/wall.jpg"),
+		};
+		
+        bunny1 = new Bunny(800, 100, new Sprite(BunnyLogic.textures.bunny1));
+        bunny2 = new Bunny(200, 100, new Sprite(BunnyLogic.textures.bunny2));
 
         var walls = [
 			new Wall(600, 700, 1000, 40),
@@ -108,12 +118,19 @@ private class Bunny extends Actor {
     public function update(grid : SparseGrid<Actor>, deltaTime : Float) {
         if(keys.left) { sprite.scale.x = -1;  velocityX = -200; }
         else if(keys.right) { sprite.scale.x = 1;  velocityX = 200; }
-        else velocityX *= 0.90;
+        else velocityX *= 0.80;
         if(Math.abs(velocityX) < 5) velocityX = 0;
         velocityY += BunnyLogic.gravitationalForce * deltaTime;
         move(grid, deltaTime);
 
-        sprite.position.set(boundingBox.x, boundingBox.y);
+		var walkScaleFactor = if(Math.abs(velocityX) > 100) 1 else Math.abs(velocityX) / 100;
+		var walkScale = Math.sin(boundingBox.x / 10) * walkScaleFactor;
+        sprite.position.set(boundingBox.x, boundingBox.y - walkScale * sprite.height * 0.1);
+		
+		sprite.scale.y = walkScale * 0.05 + 0.95;
+		function sigmoid(t : Float) { return 1.0 / (1 + Math.exp(-t)) - 0.5; }
+		var sigmoidInput = velocityY / 100;
+		sprite.rotation = sigmoid(sigmoidInput) * sprite.scale.x;
 
         for(part in parts) {
             if(part.timeToLive < 0) {
@@ -133,10 +150,13 @@ private class Bunny extends Actor {
             jumpsLeft--;
         }
     }
+	
+	override public function onCollision(that:Actor, bounceVelocityX:Float, bounceVelocityY:Float, bounceX:Float, bounceY:Float):Bool {
+        if(Std.is(that, Wall)) jumpsLeft = maxJumps;
+		return true;
+	}
 
     override function onCollisionBy(that : Actor, incomingVelocityX : Float, incomingVelocityY : Float) {
-        if(Std.is(that, Wall)) jumpsLeft = maxJumps;
-
         if(Std.is(that, Bunny) && that.boundingBox.y < boundingBox.y && velocityY + incomingVelocityY > 0) {
             that.velocityY = -200;
 
@@ -146,11 +166,11 @@ private class Bunny extends Actor {
                 var scale : Float;
                 if(i % 3 != 0) {
                     container = partContainer1;
-                    texture = Texture.fromImage("../assets/bunny-part1.png");
+                    texture = BunnyLogic.textures.bunnyPart1;
                     scale = 0.8;
                 } else {
                     container = partContainer2;
-                    texture = Texture.fromImage("../assets/bunny-part2.png");
+                    texture = BunnyLogic.textures.bunnyPart2;
                     scale = 1;
                 };
 
@@ -225,7 +245,7 @@ private class Wall extends Actor {
 
     public function new(x : Float, y : Float, width : Float, height : Float) {
         super(new BoundingBox(x, y, width, height), 0, 0, true);
-        this.sprite = new TilingSprite(Texture.fromImage("../assets/wall.jpg"), width, height);
+        this.sprite = new TilingSprite(BunnyLogic.textures.wall, width, height);
         sprite.anchor.set(0.5, 0.5);
         sprite.position.set(boundingBox.x, boundingBox.y);
     }
