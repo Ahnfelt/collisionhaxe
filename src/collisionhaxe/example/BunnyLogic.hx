@@ -45,6 +45,14 @@ class BunnyLogic {
             if(pressed && !bunny1.keys.up) bunny1.onJump();
             bunny1.keys.up = pressed;
         }
+
+        else if(event.keyCode == 65) bunny2.keys.left = pressed;
+        else if(event.keyCode == 68) bunny2.keys.right = pressed;
+        else if(event.keyCode == 87) {
+            if(pressed && !bunny2.keys.up) bunny2.onJump();
+            bunny2.keys.up = pressed;
+        }
+
         else return;
         event.preventDefault();
    	}
@@ -53,12 +61,12 @@ class BunnyLogic {
 
 
 private class Bunny extends Actor {
-    var gravitationalForce = 800;
+    var gravitationalForce = 1000;
 
     public var sprite : Sprite;
 
     public function new(x : Float, y : Float, sprite : Sprite) {
-        super(new BoundingBox(x, y, 40, 40), 0, -30);
+        super(new BoundingBox(x, y, 30, 30), 0, -30, true);
         this.sprite = sprite;
         sprite.anchor.set(0.5, 0.5);
     }
@@ -82,5 +90,13 @@ private class Bunny extends Actor {
 
     public function onJump() {
         velocityY = -300;
+    }
+
+    override function onCollisionBy(that : Actor, incomingVelocityX : Float, incomingVelocityY : Float) {
+        if(that.boundingBox.y < boundingBox.y && incomingVelocityY > 0) {
+            that.velocityY = -200;
+            boundingBox.x = 100;
+            boundingBox.y = 10000;
+        }
     }
 }
